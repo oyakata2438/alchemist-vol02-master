@@ -1,10 +1,10 @@
 # Alchemist Vol.2
 
-FIXME: Wercker Badge
+[![wercker status](https://app.wercker.com/status/1b499348699bddecaf284f2b0e13c3c0/s/master "wercker status")](https://app.wercker.com/project/byKey/1b499348699bddecaf284f2b0e13c3c0)
 
 ## 概要説明
 
-錬金術合同誌、お疲れ様でした。さぁVol2だ
+技術書典4ならびにAlchemist Vol.1、お疲れ様でした。さぁVol.2だ
 
 ## この本の最終目的
 
@@ -28,7 +28,7 @@ Contributorsに、自己紹介と、執筆者コメントを忘れずに入れ�
 
 werckerを使っています。リポジトリが更新されると自動でPDFが出力されます。
 
-* https://app.wercker.com/erukiti/tb4-alchemists/runs
+* https://app.wercker.com/erukiti/alchemist-vol02/runs
 
 ## インストール
 
