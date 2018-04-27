@@ -11,4 +11,4 @@ build:
     #   code: npm run epub
     - script:
       name: output artifacts
-      code: cp articles/tb4-alchemists.* $WERCKER_REPORT_ARTIFACTS_DIR/
+      code: cp articles/*.pdf $WERCKER_REPORT_ARTIFACTS_DIR/
