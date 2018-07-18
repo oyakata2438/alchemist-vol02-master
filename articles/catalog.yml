@@ -6,8 +6,13 @@ CHAPS:
 
 # 各自書きたい内容とファイル名を追加していく
 
-# Proof of Work
-  - chap-proof-of-work.re
+# 暗号通貨で○万円溶かした話する？ @erukiti
+  - chap-melt-money-with-coin.re
+
+# ラボ特集
+
+# この本を書くにあたってポイント・トークンシステムを作った話
+  - labo-token-point.re
 
 APPENDIX:
 
