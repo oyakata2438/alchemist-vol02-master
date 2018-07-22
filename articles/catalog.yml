@@ -11,8 +11,11 @@ CHAPS:
 
 # ラボ特集
 
-# この本を書くにあたってポイント・トークンシステムを作った話
+# この本を書くにあたってポイント・トークンシステムを作った話（これから作る話） @erukiti
   - labo-token-point.re
+
+# オンラインラボという試み @erukiti
+  - labo-online.re
 
 APPENDIX:
 
