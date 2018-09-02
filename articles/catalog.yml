@@ -14,6 +14,14 @@ CHAPS:
 # ラボ概要@親方
   - alchemist-lab.re
 
+# 寄稿1　トキワの森プロジェクト
+
+  - tokiwa.re
+
+#　寄稿2　ギーラボ長野
+
+  - geeklabnagano.re
+
 # この本を書くにあたってポイント・トークンシステムを作った話（これから作る話） @erukiti
   - labo-token-point.re
 
