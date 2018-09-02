@@ -15,7 +15,6 @@ https://qiita.com/SaitoTsutomu/items/0f6c1a4415d196e64314
 
 実行環境は、Windows 10 Pro, Python3.5（Anaconda）を前提とします。
 
-
 == グラフ・ネットワーク問題
 
 「グラフ」
