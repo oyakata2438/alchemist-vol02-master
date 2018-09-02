@@ -11,6 +11,9 @@ CHAPS:
 
 # ラボ特集
 
+# ラボ概要@親方
+  - alchemist-lab.re
+
 # この本を書くにあたってポイント・トークンシステムを作った話（これから作る話） @erukiti
   - labo-token-point.re
 
