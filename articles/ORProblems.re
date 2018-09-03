@@ -28,7 +28,7 @@ https://qiita.com/SaitoTsutomu/items/0f6c1a4415d196e64314
 
 また、点や辺に重みを付与する場合もある
 
-//image[image2][重み付きグラフの例]
+//image[image2][重み付きグラフの例][scale=0.8]
 
 === 最小全域木問題（＃１）
 
@@ -59,19 +59,19 @@ nx.draw_networkx_edges(t, pos, width=3) #更に全域最小木を太字（width=
 plt.show() #さあ表示！！
 //}
 
-//image[image4][#1最小全域木問題のグラフ]
+//image[image4][#1最小全域木問題のグラフ][scale=0.5]
 
 ==== データの説明
 
 Node：上記グラフに於ける（頂）点データ。idは頂点の識別番号、x,yは便宜的表示用の座標軸上位置
 
-//image[table2][最小全域木問題におけるノードデータ]
+//image[table2][最小全域木問題におけるノードデータ][scale=0.75]
 
 Edge：上記グラフに於ける辺データ。
 表示されているnode1とnode2の組み合わせに辺がある。
 Weightは辺重みを表す。Weight列がない場合は、nodeデータ座標軸のユークリッド距離を用いる。
 
-//image[table3][最小全域木問題におけるエッジデータ]
+//image[table3][最小全域木問題におけるエッジデータ][scale=0.75]
 
 === 最大安定集合問題（最小頂点被覆問題, 補グラフの最大クリーク問題）（＃２）
 
@@ -102,16 +102,16 @@ plt.show()
 print(t)
 //}
 
-//image[image6][最大安定集合問題のグラフ]
+//image[image6][最大安定集合問題のグラフ][scale=0.5]
 
 Node：上記グラフに於ける（頂）点データ。idは頂点の識別番号、x,yは便宜的な座標軸上の位置
 
-//image[table4][最大安定集合問題におけるノードデータ]
+//image[table4][最大安定集合問題におけるノードデータ][scale=0.75]
 
 表示されているnode1とnode2の組み合わせに辺がある。
 辺の重みを表すWeightは自明であるが不要。
 
-//image[table5][最大安定集合問題における辺データ]
+//image[table5][最大安定集合問題における辺データ][scale=0.75]
 
 ==== 最小頂点被覆問題
 
@@ -128,7 +128,7 @@ plt.show()
 print(t)
 //}
 
-//image[image7][最小頂点被覆問題のグラフ]
+//image[image7][最小頂点被覆問題のグラフ][scale=0.5]
 
 データは、最大集合安定問題と同じ。
 
@@ -161,9 +161,9 @@ plt.show()
 print(t)
 //}
 
-//image[table6][最大カット問題のノード]
+//image[table6][最大カット問題のノード][scale=0.75]
 
-//image[table7][最大カット問題の辺]
+//image[table7][最大カット問題の辺][scale=0.75]
 
 Node: 最小全域木問題のNodeデータと同じ。
 
@@ -192,7 +192,7 @@ nx.draw_networkx_nodes(g, pos, nodelist=route)
 plt.show()
 //}
 
-//image[image9][最短経路問題のグラフ]
+//image[image9][最短経路問題のグラフ][scale=0.5]
 
 データの解説：最大カット問題と同じ。
 
@@ -223,11 +223,11 @@ for i, d in t[1].items():
         if f: print((i, j), f)
 //}
 
-//image[image10][最大流問題のグラフ]
+//image[image10][最大流問題のグラフ][scale=0.5]
 
-//image[table8][最大流問題のノード]
+//image[table8][最大流問題のノード][scale=0.75]
 
-//image[table9][最大流問題のエッジ]
+//image[table9][最大流問題のエッジ][scale=0.75]
 
 Node:最大カット問題のデータと同じ
 
@@ -257,11 +257,11 @@ nx.draw_networkx_edge_labels(g, pos,
 plt.show()
 //}
 
-//image[image11][最小費用流問題のグラフ]
+//image[image11][最小費用流問題のグラフ][scale=0.5]
 
-//image[table10][最小費用流問題のノード]
+//image[table10][最小費用流問題のノード][scale=0.75]
 
-//image[table11][最小費用流問題のエッジ]
+//image[table11][最小費用流問題のエッジ][scale=0.75]
 
 Node:各頂点の需要量がdemand列に表される
 
@@ -294,11 +294,11 @@ nv, capa = 2, 3 # 車両数、車両容量
 print(vrp(g, nv, capa))
 //}
 
-//image[image12][運搬経路問題のグラフ]
+//image[image12][運搬経路問題のグラフ][scale=0.5]
 
-//image[table12][運搬経路問題のノード]
+//image[table12][運搬経路問題のノード][scale=0.75]
 
-//image[table13][運搬経路問題のエッジ]
+//image[table13][運搬経路問題のエッジ][scale=0.75]
 
 Node:最小費用流問題と異なり、発地の需要がマイナスとなっておらずゼロである。
 
@@ -463,9 +463,9 @@ Agent ... 998 , Cost ... 26.483572
 Agent ... 999 , Cost ... 26.483572
 //}
 
-//image[image13][巡回セールスマン問題の出力]
+//image[image13][巡回セールスマン問題の出力][scale=0.5]
 
-//image[table14][巡回セールスマン問題のノード]
+//image[table14][巡回セールスマン問題のノード][scale=0.75]
 
 Nodeデータのみです。列名、行名無です。左からx座標とy座標
 
