@@ -7,7 +7,9 @@
 == 組み合わせ最適化手法の典型問題列挙と整理
 
 ありがたいことに@SaitoTsutomuさんが
+
 https://qiita.com/SaitoTsutomu/items/0f6c1a4415d196e64314
+
 にまとめられていますので、引用させていただきます。
 というか、これなしには、私の中では、実務とOR教科書の例題が結びつきませんでした…orz。
 
@@ -113,7 +115,7 @@ Node：上記グラフに於ける（頂）点データ。idは頂点の識別�
 
 ==== 最小頂点被覆問題
 
-//listnum[No3][最小頂点被覆問題のコード]{
+//listnum[No2-2][最小頂点被覆問題のコード]{
 import pandas as pd, networkx as nx, matplotlib.pyplot as plt
 from ortoolpy import graph_from_table, networkx_draw, min_node_cover
 tbn = pd.read_csv('./node0mac1.csv')
@@ -146,7 +148,7 @@ print(t)
 
 ==== 最大カット問題のサンプルコードとデータ構造の解説
 
-//listnum[No4][最大カット問題のサンプルコード]{
+//listnum[No3][最大カット問題のサンプルコード]{
 import pandas as pd, networkx as nx, matplotlib.pyplot as plt
 from ortoolpy import graph_from_table, networkx_draw, maximum_cut
 tbn = pd.read_csv('./node0mac1.csv')
@@ -164,6 +166,7 @@ print(t)
 //image[table7][最大カット問題の辺]
 
 Node: 最小全域木問題のNodeデータと同じ。
+
 Edge: 最小全域木問題のEdgeデータと同じ。node1,node2でどの辺かを示し、weightで重みを与える。
 
 === 最短路問題（＃４）
@@ -176,7 +179,7 @@ Edge: 最小全域木問題のEdgeデータと同じ。node1,node2でどの辺�
 
 ==== 最短経路問題のサンプルプログラムとデータ
 
-//listnum[No5][最短経路問題のサンプルコード]{
+//listnum[No4][最短経路問題のサンプルコード]{
 import pandas as pd, networkx as nx, matplotlib.pyplot as plt
 from ortoolpy import graph_from_table, networkx_draw, maximum_stable_set
 tbn = pd.read_csv('./node0mac1.csv')
@@ -203,7 +206,7 @@ plt.show()
 
 ==== 最大流問題のサンプルコード
 
-//listnum[No6][最大流問題のサンプルコード]{
+//listnum[No5][最大流問題のサンプルコード]{
 import pandas as pd, networkx as nx
 import matplotlib.pyplot as plt
 from ortoolpy import graph_from_table, networkx_draw
@@ -238,7 +241,7 @@ Edge:流量の上限制約であるcapacity変数を含む
 
 
 ==== 最小費用流問題のサンプルコード
-//listnum[No7][最小費用流問題のサンプルコード]{
+//listnum[No6][最小費用流問題のサンプルコード]{
 import pandas as pd, networkx as nx, matplotlib.pyplot as plt
 from ortoolpy import graph_from_table, networkx_draw
 tbn = pd.read_csv('./node0mac2.csv')
@@ -267,8 +270,210 @@ Edge:最大流問題と同じ。
 
 
 == 経路問題
+
+経路の最適化を行うための問題。（少し追記してほしいかなー）
+
 === 運搬経路（配送最適化）問題（＃７）
+
+==== 運搬経路問題の応用例
+
+運搬経路最適化
+
+==== 運搬経路問題のサンプルコードとデータ
+
+//listnum[No7][運搬経路問題のサンプルコード]{
+import pandas as pd, networkx as nx
+import matplotlib.pyplot as plt
+from ortoolpy import vrp, graph_from_table, networkx_draw
+tbn = pd.read_csv('./node1.csv')
+tbe = pd.read_csv('./edge1.csv')
+g = graph_from_table(tbn, tbe)[0].to_directed()
+networkx_draw(g)
+plt.show()
+nv, capa = 2, 3 # 車両数、車両容量
+print(vrp(g, nv, capa))
+//}
+
+//image[image12][運搬経路問題のグラフ]
+
+//image[table12][運搬経路問題のノード]
+
+//image[table13][運搬経路問題のエッジ]
+
+Node:最小費用流問題と異なり、発地の需要がマイナスとなっておらずゼロである。
+
+Edge:配送ルート毎のコストを保持している。
+
+
+
+
+
+
+
 === 巡回セールスマン問題（＃８）
+
+巡回セールスマン問題（英: traveling salesman problem、TSP）は、都市の集合と各2都市間の移動コスト（たとえば距離）が与えられたとき、全ての都市をちょうど一度ずつ巡り出発地に戻る巡回路の総移動コストが最小のものを求める（セールスマンが所定の複数の都市を1回だけ巡回する場合の最短経路を求める）組合せ最適化問題。
+
+==== 巡回セールスマン問題の応用例
+
+まさにサプライチェーンの業務効率化に資する問題そのもの
+
+==== 巡回セールスマン問題のサンプルプログラムとデータ
+NP困難な問題の解法として種々のヒューリスティックな方法がありますが、今回は私的に耳に新しい蟻コロニー最適化（ACO）による解法のプログラムをみてみます。蟻が巣に物資を運ぶ際の最適経路選定に用いている方法の援用のようです。
+
+//listnum[no8][巡回セールスマン問題のサンプルプログラム]{
+#巡回セールスマン問題を蟻コロニー最適化と遺伝的アルゴリズムで解いてみる[Python]
+#http://tony-mooori.blogspot.com/2016/02/tsppython.html
+#coding:utf-8
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+from scipy.spatial import distance as dis
+"""
+参考URL
+[1] 蟻コロニー最適化 - Wikipedia https://ja.wikipedia.org/wiki/蟻コロニー最適化
+[2] 任意の確率密度分布に従う乱数の生成（von Neumannの棄却法） | Pacocat's Life http://pacocat.com/?p=596
+"""
+class TSP:
+    def __init__(self,path=None,alpha = 1.0,beta = 1.0,Q = 1.0,vanish_ratio = 0.95):
+        """ 初期化を行う関数 """
+        self.alpha = alpha                    # フェロモンの優先度
+        self.beta = beta                    # ヒューリスティック情報(距離)の優先度
+        self.Q = Q                            # フェロモン変化量の係数
+        self.vanish_ratio = vanish_ratio    # 蒸発率
+        if path is not None:
+            self.set_loc(np.array(pd.read_csv(path)))
+    
+    def set_loc(self,locations):
+        """ 位置座標を設定する関数 """
+        self.loc = locations                            # x,y座標
+        self.n_data = len(self.loc)                        # データ数
+        self.dist = dis.squareform(dis.pdist(self.loc))    # 距離の表を作成
+        self.weight = np.random.random_sample((self.n_data,self.n_data))  # フェロモンの量
+        self.result = np.arange(self.n_data)            # もっともよかった順序を保存する
+        print("x,y座標")
+        print(self.loc)
+        #print(self.n_data)
+        print("距離の表")
+        print(self.dist)
+        #print(self.weight)
+        #print(self.result)
+        
+    def cost(self,order):
+        """ 指定された順序のコスト計算関数 """
+        n_order = len(order)
+        return np.sum( [ self.dist[order[i],order[(i+1)%n_order]] for i in np.arange(n_order) ] )
+    
+    def plot(self,order=None):
+        """ 指定された順序でプロットする関数 """
+        if order is None:
+            plt.plot(self.loc[:,0],self.loc[:,1])
+        else:
+            plt.plot(self.loc[order,0],self.loc[order,1])
+        plt.show()
+    
+    def solve(self,n_agent=1000):
+        """ 巡回セールスマン問題を蟻コロニー最適化で解く """
+        
+        order = np.zeros(self.n_data,np.int)         # 巡回経路
+        delta = np.zeros((self.n_data,self.n_data))    #フェロモン変化量
+        
+        for k in range(n_agent):
+            city = np.arange(self.n_data)
+            now_city = np.random.randint(self.n_data)    # 現在居る都市番号
+            
+            city = city[ city != now_city ]
+            order[0] = now_city
+            
+            for j in range(1,self.n_data):
+                upper = np.power(self.weight[now_city,city],self.alpha)*np.power(self.dist[now_city,city],-self.beta)
+                
+                evaluation = upper / np.sum(upper)                # 評価関数
+                percentage = evaluation / np.sum(evaluation)    # 移動確率
+                index = self.random_index(percentage)            # 移動先の要素番号取得
+                
+                # 状態の更新
+                now_city = city[ index ]
+                city = city[ city != now_city ]
+                order[j] = now_city
+            
+            L = self.cost(order) # 経路のコストを計算
+            
+            # フェロモンの変化量を計算
+            delta[:,:] = 0.0
+            c = self.Q / L
+            for j in range(self.n_data-1):
+                delta[order[j],order[j+1]] = c
+                delta[order[j+1],order[j]] = c
+            
+            # フェロモン更新
+            self.weight *= self.vanish_ratio 
+            self.weight += delta
+            
+            # 今までで最も良ければ結果を更新
+            if self.cost(self.result) > L:
+                self.result = order.copy()
+            
+            # デバッグ用
+            print("Agent ... %d , Cost ... %lf" % (k,self.cost(self.result)))
+        
+        return self.result
+
+    
+    def random_index(self,percentage):
+        """ 任意の確率分布に従って乱数を生成する関数 """
+        n_percentage = len(percentage)
+        
+        while True:
+            index = np.random.randint(n_percentage)
+            y = np.random.random()
+            if y < percentage[index]:
+                return index
+      
+if __name__=="__main__":
+    tsp = TSP(path="node0mac3-only-xy-figure.csv")
+    tsp.solve(n_agent=1000)        # 1000匹の蟻を歩かせる
+    tsp.plot(tsp.result)        # 計算後
+    plt.show()
+//}
+
+出力
+//listnum[no8-out][巡回セールスマン問題の出力]{
+x,y座標
+[[ 5  8]
+ [10  5]
+ [ 7  0]
+ [ 2  2]
+ [ 0  5]]
+距離の表
+[[  0.           5.83095189   8.24621125   6.70820393   5.83095189]
+ [  5.83095189   0.           5.83095189   8.54400375  10.        ]
+ [  8.24621125   5.83095189   0.           5.38516481   8.60232527]
+ [  6.70820393   8.54400375   5.38516481   0.           3.60555128]
+ [  5.83095189  10.           8.60232527   3.60555128   0.        ]]
+Agent ... 0 , Cost ... 26.483572
+Agent ... 1 , Cost ... 26.483572
+Agent ... 2 , Cost ... 26.483572
+Agent ... 3 , Cost ... 26.483572
+…
+Agent ... 995 , Cost ... 26.483572
+Agent ... 996 , Cost ... 26.483572
+Agent ... 997 , Cost ... 26.483572
+Agent ... 998 , Cost ... 26.483572
+Agent ... 999 , Cost ... 26.483572
+//}
+
+//image[image13][巡回セールスマン問題の出力]
+
+//image[table14][巡回セールスマン問題のノード]
+
+Nodeデータのみです。列名、行名無です。左からx座標とy座標
+
+==== 巡回セールスマン問題の感想
+本件では、入力データのxy座標からユークリッド距離を生成しています。
+地点間の距離を任意に投入したい場合は、プログラム中の「距離の表を作成」のところを改変して、地点間距離データを投入する事で対応可能と思量します。そうすれば、実務上は必ずしもユークリッド距離に拠らない、輸送料金での最適化なども可能と思量します。
+
+
 === 中国人郵便配達問題（＃９）
 == 集合被覆・分割問題
 === 集合被覆問題（＃１０） 
