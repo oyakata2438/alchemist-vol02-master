@@ -274,9 +274,9 @@ Edge:最大流問題と同じ。
 経路の最適化を行うための問題。（少し追記してほしいかなー）
 
 === 運搬経路（配送最適化）問題[Vehcle Routing Problem]（＃７）
-複数のサービス車(Vehicle)がスタート地点から需要のある地点の巡回を行いゴール地点へ行く．全ての需要を満たし，総経路コストを最小化することを考える問題
+複数のサービス車（Vehicle）がスタート地点から需要のある地点の巡回を行いゴール地点へ行く。全ての需要を満たし、総経路コストを最小化することを考える問題
 ==== 運搬経路問題の応用例
-説明通りの配送網に於ける複数台のトラックへの配送物割り当ての他、複数人が働く倉庫での資材取り出しに於ける作業員への振り分け等。
+説明どおりの配送網に於ける複数台のトラックへの配送物割り当ての他、複数人が働く倉庫での資材取り出しに於ける作業員への振り分け等。
 運搬経路最適化
 
 ==== 運搬経路問題のサンプルコードとデータ
@@ -471,12 +471,103 @@ Nodeデータのみです。列名、行名無です。左からx座標とy座�
 
 ==== 巡回セールスマン問題の感想
 本件では、入力データのxy座標からユークリッド距離を生成しています。
-地点間の距離を任意に投入したい場合は、プログラム中の「距離の表を作成」のところを改変して、地点間距離データを投入する事で対応可能と思量します。そうすれば、実務上は必ずしもユークリッド距離に拠らない、輸送料金での最適化なども可能と思量します。
+地点間の距離を任意に投入したい場合は、プログラム中の「距離の表を作成」のところを改変して、地点間距離データを投入することで対応可能と思量します。そうすれば、実務上は必ずしもユークリッド距離に拠らない、輸送料金での最適化なども可能と思量します。
 
 
 === 中国人郵便配達問題（＃９）
+
+全ての頂点間をいずれかの辺を通って（必ずしも直結する辺が存在するとは限らない、また辺には重みがある）移動できるときに全ての辺を通り重みの合計が最小となる通り方を求める問題。
+
+==== 中国人郵便配達問題の応用例
+
+まさに郵便配達に類するサプライチェーン問題にどうぞ
+
+==== 中国人郵便配達問題のサンプルコード
+
+//listnum[No9][中国人郵便配達問題のサンプルコード]{
+import pandas as pd, networkx as nx, matplotlib.pyplot as plt
+from ortoolpy import chinese_postman, graph_from_table, networkx_draw
+tbn = pd.read_csv('./node0mac1.csv')
+tbe = pd.read_csv('./edge0mac2.csv')
+g = graph_from_table(tbn, tbe, multi=True)[0]
+networkx_draw(g)
+plt.show()
+print("重み合計とルート順表示")
+print(chinese_postman(g))
+//}
+
+//image[image14][中国人郵便配達問題の出力]
+
+重み合計とルート順表示
+//listnum[No9-out][出力:重み合計とルート順表示]{
+(36, [(0, 4), (4, 5), (5, 4), (4, 3), (3, 2), (2, 3), (3, 0), (0, 5), (5, 1), (1, 2), (2, 0), (0, 1), (1, 0)])
+//}
+
+//image[table15][中国人郵便配達問題の問題のノード][scale=0.75]
+
+//image[table16][中国人郵便配達問題の問題のエッジ][scale=0.75]
+
+ノード間の重み（Weight)情報は、ノードテーブルの方に格納される。
+
+
 == 集合被覆・分割問題
 === 集合被覆問題（＃１０） 
+
+集合の部分集合毎にコストが与えられているときに最小コストで集合の全要素をカバーできるような部分集合の組み合わせを選択する。（複数の部分集合でカバーされている要素があっても構わない）
+
+==== 集合被覆問題の応用例
+乗務員スケーリング問題等。
+
+==== 集合被覆問題のサンプルプログラムとデータ
+//listnum[No10-1][集合被覆問題のサンプルコード1]{
+def set_cover(universe, subsets):
+    """Find a family of subsets that covers the universal set"""
+    """http://www.martinbroadhurst.com/greedy-set-cover-in-python.html"""
+    elements = set(e for s in subsets for e in s)
+    # Check the subsets cover the universe
+    if elements != universe:
+        return None
+    covered = set()
+    cover = []
+    # Greedily add the subsets with the most uncovered points
+    while covered != elements:
+        subset = max(subsets, key=lambda s: len(s - covered))
+        cover.append(subset)
+        covered |= subset
+ 
+    return cover
+ 
+def main():
+    universe = set(range(1, 11))
+    subsets = [set([1, 2, 3, 8, 9, 10]),
+        set([1, 2, 3, 4, 5]),
+        set([4, 5, 7]),
+        set([5, 6, 7]),
+        set([6, 7, 8, 9, 10])]
+    cover = set_cover(universe, subsets)
+    print("whole universe")
+    print(universe)
+    print("given subsets")
+    print(subsets)
+    print("cover:chosen subsets")
+    print(cover)
+
+if __name__ == '__main__':
+    main()
+//}
+
+//listnum[No10-2][集合被覆問題の出力1]{
+出力：上から全集合、被覆する為に用いる部分集合、解答として選ばれた部分集合群
+whole universe
+{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+given subsets
+[{1, 2, 3, 8, 9, 10}, {1, 2, 3, 4, 5}, {4, 5, 7}, {5, 6, 7}, {8, 9, 10, 6, 7}]
+cover:chosen subsets
+[{1, 2, 3, 8, 9, 10}, {4, 5, 7}, {5, 6, 7}]
+//}
+
+
+
 === 集合分割問題（＃１１）
 === 組み合わせオークション問題（＃１２）⇒組み合わせオークションは割愛しようかと考えています。
 == スケジューリング問題
