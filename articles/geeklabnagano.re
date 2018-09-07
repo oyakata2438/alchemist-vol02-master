@@ -238,8 +238,8 @@ A2: JSLのCSR活動の一貫も兼ねているため、
         \includegraphics[width=.75\linewidth]{images/geeklabnagano/katekcihi.jpg}
     \end{minipage}
     \begin{minipage}{.89\linewidth}
-        なかざわ ゆういち（katekcihi）   https://twitter.com/y_nakazawa1220 
-        https://www.facebook.com/nakazawa.yuichi 
+        なかざわ ゆういち（katekcihi） https://twitter.com/y_nakazawa1220\\
+        https://www.facebook.com/nakazawa.yuichi\ 
         \end{minipage}
     \hspace{1ex}
 //}
