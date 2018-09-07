@@ -566,32 +566,617 @@ cover:chosen subsets
 [{1, 2, 3, 8, 9, 10}, {4, 5, 7}, {5, 6, 7}]
 //}
 
+//listnum[No10-3][集合被覆問題のサンプルその2]{
+import pandas as pd
+from ortoolpy import set_covering
+ss = pd.read_csv('./subset.csv')
+g = ss.groupby('id')
+print(‘結果’)
+set_covering(len(g), [(r.weight.iloc[0], r.element.tolist()) for _, r in g])
+//}
+
+結果
+
+//image[table17][被覆集合問題のサンプル2の結果]
+
+//image[image15][被覆集合問題のサンプル2の結果グラフ][scale=0.9]
+
+[0,1,2]
+縦持ち形式で、id毎の重みweightとカバーする領域elementの形で与えられる。
+a,b,c,dの要素をid0,1,2,3でカバーする際に最小重み和となるのは0,1,2である。
 
 
 === 集合分割問題（＃１１）
-=== 組み合わせオークション問題（＃１２）⇒組み合わせオークションは割愛しようかと考えています。
+
+集合の部分集合毎にコストが与えられているときに最小コストで集合の全要素をカバーできるような部分集合の組み合わせを選択する。（複数の部分集合でカバーされている要素があってはいけない）
+
+==== 集合分割問題の応用例
+
+==== 集合分割問題のサンプルプログラムとデータ
+//listnum[No11][集合分割問題のサンプルプログラム]{
+import pandas as pd
+from ortoolpy import set_partition
+ss = pd.read_csv('./subset.csv')
+g = ss.groupby('id')
+set_partition(len(g), [(r.weight.iloc[0], r.element.tolist()) for _, r in g])
+//}
+
+データは、集合被覆問題とおなじ。
+
+//image[image16][集合分割問題の結果]
+
+[2,3]
+a,b,c,dの要素をid2,3でカバーするとコストは先の被覆問題より増加するが,重複が生じない。
+
+=== 組み合わせオークション問題（＃１２）
+
+割愛します。
+
 == スケジューリング問題
+スケジュールを立てる問題。
+
 === ジョブショップ問題（＃１３）
+与えられたn個のジョブV={1,…,n}をm台の機械で処理する。1つの機械では、同時に1つのジョブしか処理できない。全てのジョブの終了時間を最小にするスケジュールを求める問題。
+
+==== ジョブショップ問題の応用例
+生産計画等の現場で仕事（ジョブ）を機械に効率的に割り振る事で，完了時刻，納期遅れ等の最小化を目指す等。
+
+==== ジョブショップ問題のサンプルプログラム
+//listnum[No13][ジョブショップ問題のサンプルプログラム]{
+###The Job Shop Problem
+
+from __future__ import print_function
+
+# Import Python wrapper for or-tools constraint solver.
+from ortools.constraint_solver import pywrapcp
+
+def main():
+  # Create the solver.
+  solver = pywrapcp.Solver('jobshop')
+
+  machines_count = 3
+  jobs_count = 3
+  all_machines = range(0, machines_count)
+  all_jobs = range(0, jobs_count)
+  # Define data.
+  machines = [[0, 1, 2],
+              [0, 2, 1],
+              [1, 2]]
+
+  processing_times = [[3, 2, 2],
+                      [2, 1, 4],
+                      [4, 3]]
+  # Computes horizon.
+  horizon = 0
+  for i in all_jobs:
+    horizon += sum(processing_times[i])
+  # Creates jobs.
+  all_tasks = {}
+  for i in all_jobs:
+    for j in range(0, len(machines[i])):
+      all_tasks[(i, j)] = solver.FixedDurationIntervalVar(0,
+                                                          horizon,
+                                                          processing_times[i][j],
+                                                          False,
+                                                          'Job_%i_%i' % (i, j))
+
+  # Creates sequence variables and add disjunctive constraints.
+  all_sequences = []
+  all_machines_jobs = []
+  for i in all_machines:
+
+    machines_jobs = []
+    for j in all_jobs:
+      for k in range(0, len(machines[j])):
+        if machines[j][k] == i:
+          machines_jobs.append(all_tasks[(j, k)])
+    disj = solver.DisjunctiveConstraint(machines_jobs, 'machine %i' % i)
+    all_sequences.append(disj.SequenceVar())
+    solver.Add(disj)
+
+  # Add conjunctive contraints.
+  for i in all_jobs:
+    for j in range(0, len(machines[i]) - 1):
+      solver.Add(all_tasks[(i, j + 1)].StartsAfterEnd(all_tasks[(i, j)]))
+
+  # Set the objective.
+  obj_var = solver.Max([all_tasks[(i, len(machines[i])-1)].EndExpr()
+                        for i in all_jobs])
+  objective_monitor = solver.Minimize(obj_var, 1)
+  # Create search phases.
+  sequence_phase = solver.Phase([all_sequences[i] for i in all_machines],
+                                solver.SEQUENCE_DEFAULT)
+  vars_phase = solver.Phase([obj_var],
+                            solver.CHOOSE_FIRST_UNBOUND,
+                            solver.ASSIGN_MIN_VALUE)
+  main_phase = solver.Compose([sequence_phase, vars_phase])
+  # Create the solution collector.
+  collector = solver.LastSolutionCollector()
+
+  # Add the interesting variables to the SolutionCollector.
+  collector.Add(all_sequences)
+  collector.AddObjective(obj_var)
+
+  for i in all_machines:
+    sequence = all_sequences[i];
+    sequence_count = sequence.Size();
+    for j in range(0, sequence_count):
+      t = sequence.Interval(j)
+      collector.Add(t.StartExpr().Var())
+      collector.Add(t.EndExpr().Var())
+  # Solve the problem.
+  disp_col_width = 10
+  if solver.Solve(main_phase, [objective_monitor, collector]):
+    print("\nOptimal Schedule Length:", collector.ObjectiveValue(0), "\n")
+    sol_line = ""
+    sol_line_tasks = ""
+    print("Optimal Schedule", "\n")
+
+    for i in all_machines:
+      seq = all_sequences[i]
+      sol_line += "Machine " + str(i) + ": "
+      sol_line_tasks += "Machine " + str(i) + ": "
+      sequence = collector.ForwardSequence(0, seq)
+      seq_size = len(sequence)
+
+      for j in range(0, seq_size):
+        t = seq.Interval(sequence[j]);
+         # Add spaces to output to align columns.
+        sol_line_tasks +=  t.Name() + " " * (disp_col_width - len(t.Name()))
+
+      for j in range(0, seq_size):
+        t = seq.Interval(sequence[j]);
+        sol_tmp = "[" + str(collector.Value(0, t.StartExpr().Var())) + ","
+        sol_tmp += str(collector.Value(0, t.EndExpr().Var())) + "] "
+        # Add spaces to output to align columns.
+        sol_line += sol_tmp + " " * (disp_col_width - len(sol_tmp))
+
+      sol_line += "\n"
+      sol_line_tasks += "\n"
+
+    print(sol_line_tasks)
+    print("Time Intervals for Tasks\n")
+    print(sol_line)
+
+if __name__ == '__main__':
+  main()
+//}
+
+//listnum[No13-2][ジョブショップ問題の解]{
+出力
+Optimal Schedule Length: 11 
+
+Optimal Schedule 
+Machine 0: Job_0_0   Job_1_0   
+Machine 1: Job_2_0   Job_0_1   Job_1_2   
+Machine 2: Job_1_1   Job_0_2   Job_2_1   
+
+Time Intervals for Tasks
+Machine 0: [0,3]     [3,5]     
+Machine 1: [0,4]     [4,6]     [6,10]    
+Machine 2: [5,6]     [6,8]     [8,11]    
+//}
+
 === 勤務スケジューリング問題 （＃１４）
+スタッフの人数、スケジュール日数、シフトの種類数、避けるべきシフトのパターン、日ごとのシフトごとの必要数が与えられたときに、これらを満たすスケジュールを求める問題。
+
+==== 勤務スケジューリング問題のサンプルプログラム
+//listnum[NO14][勤務スケジューリング問題のサンプルプログラム]{
+from ortoolpy import shift_scheduling
+ndy, nst = 8, 4
+shift = '休日夜'
+proh = ['夜夜', '夜日', '日日日']
+need = {'日':[2] * 8, '夜':[1] * 8}
+r = shift_scheduling(ndy, nst, shift, proh, need)
+print(r)
+
+import numpy as np, pandas as pd
+a = pd.DataFrame(np.vectorize(lambda i: shift[i])(r),
+    columns=[chr(65+i) for i in range(nst)],
+    index=['%d日目'%i for i in range(1,ndy+1)])
+for sft,lst in need.items():
+    a['%s必要'%sft] = lst
+    a['%s計画'%sft] = (a.iloc[:,:4]==sft).sum(1)
+print(a)
+//}
+
+//image[table18][勤務スケジューリング問題の解]
 
 == 切り出し・詰め込み問題
+容量と品物(価値や体積)が与えられたときに価値最大化して詰め込むには？といった整数計画問題。
+
 === ナップサック問題（＃１５）
+「容量 C のナップサックが一つと、n 種類の品物（各々、価値 pi, 容積 ci）が与えられたとき、ナップサックの容量 C を超えない範囲でいくつかの品物をナップサックに詰め、ナップサックに入れた品物の価値の和を最大化するにはどの品物を選べばよいか」という整数計画問題。
+
+==== ナップサック問題の応用例
+プロジェクトの選択や物資の購入などの問題に応用されている。
+
+====　ナップサック問題のサンプルプログラムとデータ
+//listnum[No15][ナップサック問題のサンプルプログラム]{
+###Knapsacks
+
+from __future__ import print_function
+from ortools.algorithms import pywrapknapsack_solver
+
+def main():
+  # Create the solver.
+  solver = pywrapknapsack_solver.KnapsackSolver(
+      pywrapknapsack_solver.KnapsackSolver.
+      KNAPSACK_DYNAMIC_PROGRAMMING_SOLVER,
+      'test')
+
+  weights = [[565, 406, 194, 130, 435, 367, 230, 315, 393,
+              125, 670, 892, 600, 293, 712, 147, 421, 255]]
+  capacities = [850]
+  values = weights[0]
+  solver.Init(values, weights, capacities)
+  computed_value = solver.Solve()
+
+  packed_items = [x for x in range(0, len(weights[0]))
+                    if solver.BestSolutionContains(x)]
+  packed_weights = [weights[0][i] for i in packed_items]
+
+  print("Packed items: ", packed_items)
+  print("Packed weights: ", packed_weights)
+  print("Total weight (same as total value): ", computed_value)
+if __name__ == '__main__':
+  main()
+//}
+
+//listnum[No15-2][ナップサック問題の解]{
+Packed items:  [2, 3, 6, 13]
+Packed weights:  [194, 130, 230, 293]
+Total weight (same as total value):  847
+//}
+
 === ビンパッキング問題（＃１６）
+
+==== ピンパッキング問題の応用例
+ナップサック問題のナップサックを複数個に拡張した問題
+
+==== ピンパッキング問題のサンプルプログラム
+//listnum[No16][ピンパッキング問題のサンプルコード]{
+from ortoolpy import binpacking
+binpacking(10, [4, 5, 3, 8, 7, 6, 2, 3])　 # ビンのサイズと中に詰める荷物のサイズ
+//}
+
+//listnum[No16-2][ピンパッキング問題の解]{
+[[8], [7, 3], [5, 3, 2], [4, 6]]
+//}
+
+
 === ｎ次元詰め込み問題（＃１７）
+所与の「荷物（平面上のサイズ[=2次元]がついている）」を詰める「箱（ビンやコンテナなど）」の最小数を見つけるもの。
+ビンパッキングが重さ（だけ）とか個数（だけ）とかスカラーなのに対しベクトル（2次元）になる。
+
+//listnum[no17][n次元詰め込み問題のサンプルコード]{
+rom ortoolpy import TwoDimPackingClass
+  
+def TwoDimPacking(df, width, height, width_label='width',
+        height_label='height', x_label='x', y_label='y', **kwargs):
+    """
+    2次元パッキング問題
+        ギロチンカットで元板からアイテムを切り出す(近似解法)
+    入力
+        df: アイテムのDataFrameもしくはCSVファイル名
+        width: 元板の横
+        height: 元板の縦
+        width_label: アイテムの横の属性文字
+        height_label: アイテムの縦の属性文字
+        x_label: アイテムのX座標の属性文字(結果)
+        y_label: アイテムのY座標の属性文字(結果)
+    出力
+        容積率と入ったアイテムのDataFrame
+    """
+    df = graph_from_table(df, None, no_graph=True, **kwargs)[1]
+    df = df.reset_index(drop=True)
+    dt = df[[width_label,height_label]].values
+    r,t = TwoDimPackingClass(width, height, dt).solve()
+    t = np.array(t)
+    df = df.iloc[t[:,0]]
+    df[x_label] = t[:,3]
+    df[y_label] = t[:,4]
+    return r,df
+   
+TwoDimPackingClass(500, 300, [(240, 150), (260, 100), \
+    (100, 200), (240, 150), (160, 200)]).solve()
+
+//}
+
+//listnum[No17-2][n次元詰め込み問題の出力]{
+(1.0,
+ [(0, 240, 150, 0, 0),
+  (1, 260, 100, 240, 0),
+  (4, 160, 200, 240, 100),
+  (2, 100, 200, 400, 100),
+  (3, 240, 150, 0, 150)])
+//}
+
 == 配置問題
+施設の配置可能地点, 需要をもつ顧客の集合が与えられて, ある基準を満たす施設の配置場所を決定する問題の総称。
 === 施設配置問題（＃１８）
+問題の基本形としては, メディアン問題 (median problem), センター問題 (center problem), 容量制約なし施設配置問題 (uncapacitated facility location problem)または単純施設配置問題 (simple facility location problem)が挙げられる. 前者の2つの問題は, 選択される施設の個数があらかじめ決められている場合には, 選択する施設数をpとしてそれぞれ, p-メディアン問題 (p-median problem), p-センター問題 (p-center problem)とよばれる。[Wikipedia]
+
+//listnum[no18][施設配置問題のサンプルコード]{
+from ortoolpy import facility_location
+　　
+def FacilityLocation(df, p, x_label='x', y_label='y', demand_label='demand',
+        capacity_label='capacity', result_label='id', func=None, **kwargs):
+    """
+    施設配置問題
+        P-メディアン問題：総距離×量の和の最小化
+    入力
+        df: ポイントのDataFrameもしくはCSVファイル名
+        p: 施設数上限
+        x_label: X座標の属性文字
+        y_label: Y座標の属性文字
+        demand_label: 需要の属性文字(空なら需要なし)
+        capacity_label: 容量の属性文字(空なら候補でない)
+        result_label: 施設IDの属性文字(結果,利用時はdropna().astype(int))
+        func: 顧客位置index,施設候補indexを引数とする重み関数
+    出力
+        ポイントのDataFrame
+    """
+    df = graph_from_table(df, None, no_graph=True, **kwargs)[1]
+    df = df.reset_index(drop=True)
+    df1 = df.dropna(subset=[demand_label])[[x_label,y_label,demand_label]]
+    df2 = df.dropna(subset=[capacity_label])[[x_label,y_label,capacity_label]]
+    t = facility_location(p, df1.values, df2.values, func=func)
+    df.loc[df1.index, result_label] = df2.iloc[t].index
+    return df
+　　　
+facility_location(2, [(1, 0, 1), (0, 1, 1), (2, 2, 1)], 
+                     [(1, 0, 1), (0, 1, 1), (2, 2, 2)])
+//}
+
+//listnum[no18-2][施設配置問題の出力]{
+[0, 2, 2]
+//}
+
 === 容量制約なし施設配置問題（＃１９）
+顧客の需要, 顧客と施設の間に1単位の需要が移動するときにかかる輸送費用, 施設を配置するときにかかる固定費用が与えられたとき, すべての顧客の需要を満足するという条件の下で, 輸送費用と固定費用の総和を最小化するような施設の配置ならびに顧客・施設間の輸送量を決定する問題.
+
+==== 容量制約なし施設配置問題の応用例
+
+==== 要領制約なし施設配置問題のサンプルプログラム
+//listnum[No19][要領制約なし施設配置問題のサンプルコード]{
+from ortoolpy import facility_location_without_capacity
+   
+def FacilityLocationWithoutCapacity(df, p, x_label='x', y_label='y',
+        user_label='demand', facility_label='capacity',
+        result_label='id', func=None, **kwargs):
+    """
+    施設配置問題
+        P-メディアン問題：総距離×量の和の最小化
+    入力
+        df: ポイントのDataFrameもしくはCSVファイル名
+        p: 施設数上限
+        x_label: X座標の属性文字
+        y_label: Y座標の属性文字
+        user_label: 空でない場合顧客を表す属性文字
+        facility_label: 空でない場合施設を表す属性文字
+        result_label: 施設IDの属性文字(結果,利用時はdropna().astype(int))
+        func: 顧客位置index,施設候補indexを引数とする重み関数
+    出力
+        ポイントのDataFrame
+    """
+    df = graph_from_table(df, None, no_graph=True, **kwargs)[1]
+    df = df.reset_index(drop=True)
+    df1 = df.dropna(subset=[user_label])[[x_label,y_label]]
+    df2 = df.dropna(subset=[facility_label])[[x_label,y_label]]
+    t = facility_location_without_capacity(p, df1.values, df2.values, func=func)
+    df.loc[df1.index, result_label] = df2.iloc[t].index
+    return df
+   
+    
+facility_location_without_capacity(2, [(1, 0), (0, 1), (2, 2)])
+//}
+//listnum[No18-2][要領制約なし施設配置問題の解]{
+[1, 1, 2]
+//}
+
 == 割り当て・マッチング問題
 === 二次割り当て問題（＃２０）
+目的関数が2次式となる割当問題のこと. 設置予定の工場とその場所候補が与えられており, 工場間の輸送量がq_ik, 場所間の距離がd_jlとするとき, 輸送の量と距離の積の総和を最小化する問題は, P_i を L_j に設置する際に1となる0/1変数 x_ijを導入すると, 割当問題の制約に対して目的関数は2次式 
+q_ik * d_jl * x_ij となる。一見3次式に見えるが、x_ijは当該候補地に設置されるときに1,設置されないとき0となるいわばオンオフの変数なので、2次式となる。
+
+==== 二次元割り当て問題の応用例
+
+==== 二次元割り当て問題のサンプルプログラム
+//listnum[No20][二次元割り当て問題のサンプルプログラム]{
+from ortoolpy import quad_assign
+   
+def QuadAssign(dfqu, dfdi, from_label='from', to_label='to',
+        quant_label='quant', dist_label='dist',
+        target_label='target', pos_label='pos', **kwargs):
+    """
+    2次割当問題
+        全探索
+    入力
+        dfqu: 対象間の輸送量のDataFrameもしくはCSVファイル名
+        dfdi: 割当先間の距離のDataFrameもしくはCSVファイル名
+        from_label: 輸送元番号の属性文字
+        to_label: X輸送先番号の属性文字
+        quant_label: 必要輸送量の属性文字
+        dist_label: 距離の属性文字
+        target_label: 対象の属性文字(結果)
+        pos_label: 位置の属性文字(結果)
+    出力
+        評価値と割当
+    """
+    dfqu = graph_from_table(dfqu, None, no_graph=True, **kwargs)[1]
+    dfdi = graph_from_table(dfdi, None, no_graph=True, **kwargs)[1]
+    tmp = dfdi.copy()
+    tmp[[to_label,from_label]] = tmp[[from_label,to_label]]
+    dfdi = pd.concat([dfdi,tmp]).drop_duplicates([from_label,to_label])
+    r = range(max(dfqu[[from_label,to_label]].max().max(),
+                  dfdi[[from_label,to_label]].max().max())+1)
+    q = [[first(dfqu[(dfqu[from_label]==i)&(dfqu[to_label]==j)]
+          [quant_label],0) for j in r] for i in r]
+    d = [[first(dfdi[(dfdi[from_label]==i)&(dfdi[to_label]==j)]
+          [dist_label],np.inf) for j in r] for i in r]
+    r,t = quad_assign(q,d)
+    return r, pd.DataFrame([i for i in enumerate(t)], columns=[target_label,pos_label])
+    
+quad_assign([[0, 2, 0], [0, 0, 1], [0, 0, 0]], [[0, 2, 4], [2, 0, 3], [4, 3, 0]])
+//}
+
+//listnum[No20-2][二次元割り当て問題の解]{
+(7, (0, 1, 2))
+//}
+
 === 一般化割り当て問題（＃２１）
+割当問題を拡張した問題。通常の機械と仕事との割り当てに加えて, 機械iが仕事jを行ったときの負荷a_ijを考える. また, 機械iには能力の制限b_iがあるとする。のとき, 割当問題の制約式は、一方が各機械毎にa_ij * x_ij <= b_iの合計のような制約に置換えられる. 通常の割当問題とは異なり, 左辺係数行列に負荷a_ijの係数が関わるため, 全ユニモジュラ性が失われ, NP困難な問題となる. 実行可能解の存否を判定するだけでもNP完全な問題である。[Wikipedia]
+
+==== 一般化割り当て問題の応用例
+
+==== 一般化割り当て問題のサンプルプログラム
+//listnum[No21][一般化割り当て問題のサンプルプログラム]{
+from ortoolpy import gap
+ 
+def Gap(df, capacity, agent_label='agent', job_label='job',
+        cost_label='cost', req_label='req', **kwargs):
+    """
+    一般化割当問題
+        費用最小の割当を解く
+    入力
+        df: DataFrameもしくはCSVファイル名
+        capacity: エージェントの容量のリスト
+        agent_label: エージェントの属性文字
+        job_label: ジョブの属性文字
+        cost_label: 費用の属性文字
+        req_label: 要求量の属性文字
+    出力
+        選択されたDataFrame
+    """
+    df = graph_from_table(df, None, no_graph=True, **kwargs)[1]
+    a = range(df[agent_label].max()+1)
+    j = range(df[job_label].max()+1)
+    c = [[first(df[(df[agent_label]==i)&(df[job_label]==k)]
+          [cost_label],0) for k in j] for i in a]
+    r = [[first(df[(df[agent_label]==i)&(df[job_label]==k)]
+          [req_label],1e6) for k in j] for i in a]
+    t = gap(c, r, capacity)
+    return pd.concat([df[(df[agent_label]==i)&(df[job_label]==k)]
+        for k,i in enumerate(t)])
+  
+gap([[2, 2, 2], [1, 1, 1]], [[1, 1, 1], [1, 1, 1]], [2, 1])
+//}
+
+//listnum[no21-2][一般化割り当て問題の解]{
+[0,0,1]
+//}
+
 === 最大マッチング問題（＃２２）
-=== 重みマッチング問題（＃２３）
-==== 重みマッチング問題の応用例
+グラフが与えられたときに要素数最大のマッチングを求める問題を最大マッチング問題と言う。
+辺からなる集合のうち、どの2辺も端点を共有しないようなものをマッチングと呼び、最大サイズのマッチングを求める問題。
+
+//image[image17][最大マッチングの一例]
+
+赤太線で示した 2 本の辺集合が最大マッチングの一例。 3 本とれそうですがとれない。応用例
+左側の頂点を「男性」，右側の頂点を「女性」とする2部グラフに於いて、「お互い付き合ってもよいペア」に枝を引いたグラフを考え，カップル成立のペア数を最大化する問題。
+
+//image[image18][仕事割り当て問題の例]
+
+2部の「部」の分けを労働者と業務とすれば、仕事割当問題になる。
+
+==== 最大マッチング問題のサンプルプログラム
+//listnum[No22][最大マッチング問題のサンプルプログラム]{
+import pandas as pd, networkx as nx, matplotlib.pyplot as plt
+from ortoolpy import graph_from_table, networkx_draw
+  
+def MaxMatching(dfed, from_label='node1', to_label='node2', **kwargs):
+    """
+    最大マッチング問題
+    入力
+        dfed: 辺のDataFrameもしくはCSVファイル名
+        from_label: 元点の属性文字
+        to_label: 先点の属性文字
+    出力
+        選択された辺のDataFrame
+    """
+    return MaxWeightMatching(dfed, from_label=from_label,
+        to_label=to_label, weight_label='', **kwargs)
+      
+# CSVデータ
+tbn = pd.read_csv('./node0.csv')
+tbe = pd.read_csv('./edge0.csv')
+g = graph_from_table(tbn, tbe)[0]
+for i, j in g.edges():
+    del g.adj[i][j]['weight']
+d = nx.max_weight_matching(g)
+pos = networkx_draw(g)
+nx.draw_networkx_edges(g, pos, width=3, edgelist=[(i, j) for i, j in d])
+plt.show()
+print(d)
+//}
+
+//image[image][最大マッチング問題の解]
+
+=== 最大重みマッチング問題（＃２３）
+無向グラフに対し、各辺の重みが与えられているときに重みの和が最大となるマッチングを求める問題。
+
+マッチング：どの2辺も端点を共有しないような状態。
+
+==== 最大重みマッチング問題の応用例
+
+労働者と業務をグラフ上の頂点として、それらを結びつける辺の重みを利益とする場合に総利益を最大化する業務割当など。
+
+//image[image20][最大重みマッチング問題のイメージ]
+
+==== 最大重みマッチング問題のサンプルプログラムとデータ
+
+//listnum[code20][重みマッチング問題のサンプルプログラム]{
+import pandas as pd, networkx as nx, matplotlib.pyplot as plt
+from ortoolpy import graph_from_table, networkx_draw
+     
+def MaxWeightMatching(dfed, from_label='node1', to_label='node2',
+        weight_label='weight', **kwargs):
+    """
+    最大重みマッチング問題
+    入力
+        dfed: 辺のDataFrameもしくはCSVファイル名
+        from_label: 元点の属性文字
+        to_label: 先点の属性文字
+        weight_label: 辺の重みの属性文字
+    出力
+        選択された辺のDataFrame
+    """
+    g,_,dfed = graph_from_table(None, dfed, from_label=from_label,
+        to_label=to_label, from_to='FrTo_', **kwargs)
+    for i, j in g.edges():
+        g.adj[i][j]['weight'] = g.adj[i][j].get(weight_label,1)
+    t =  nx.max_weight_matching(g)
+    dftmp = pd.DataFrame(['{min(i,j)}-{max(i,j)}'
+        for i,j in t.items() if i < j], columns=['FrTo_'])
+    return pd.merge(dfed, dftmp).drop('FrTo_',1)
+ 
+    
+tbn = pd.read_csv('./node0.csv')
+tbe = pd.read_csv('./edge0.csv')
+g = graph_from_table(tbn, tbe)[0]
+d = nx.max_weight_matching(g)
+pos = networkx_draw(g)
+nx.draw_networkx_edges(g, pos, width=3, edgelist=[(i, j) for i, j in d])
+plt.show()
+print(d)
+//}
+
+//image[image21][最大重みマッチング問題の解]
+
+//listnum[No20-2][最大重みマッチング問題の解]{
+{(1, 5), (3, 4), (0, 2)}
+//}
+
+=== 安定マッチング問題（＃２４）
+2部グラフにおいては、各部に属する頂点群が相対する部の頂点群に対する嗜好順位を有する状況下で、マッチングを行う場合に、そのマッチングを崩して別のマッチングを組んだほうがその頂点にとりより高い嗜好順位とのマッチングにならない状態（個人合理性を満たす）を求める問題。
+
+==== 安定マッチング問題の応用例
 
 研修医の配属問題、研究室への配属問題
 ねるとん紅鯨団
 
-==== 重みマッチング問題のサンプルプログラムとデータ
+==== 安定マッチング問題のサンプルプログラムとデータ
 
 //listnum[code24][重みマッチング問題のサンプルプログラム]{
 from ortoolpy import stable_matching
@@ -639,19 +1224,11 @@ if __name__ == '__main__':
         magic_kind='line', magic_name='typical_optimization')
      
 print(stable_matching([[2,0,1],[2,1,0],[0,2,1]], [[0,1,2],[2,0,1],[2,1,0]]))
-
 //}
 
-=== 安定マッチング問題（＃２４）
-
-2部グラフにおいては、各部に属する頂点群が相対する部の頂点群に対する嗜好順位を有する状況下で、マッチングを行う場合に、そのマッチングを崩して別のマッチングを組んだほうがその頂点にとりより高い嗜好順位とのマッチングにならない状態（個人合理性を満たす）を求める問題。
-
-==== 安定マッチング問題の応用例
-
-研修医の配属問題、研究室への配属問題
-ねるとん紅鯨団
-
-==== 安定マッチング問題のサンプルプログラムとデータ
+//listnum[No24][安定マッチング問題の解]{
+{0: 0, 1: 1, 2: 2}
+//}
 
 == まとめ
 
