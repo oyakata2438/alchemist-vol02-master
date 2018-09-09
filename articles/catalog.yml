@@ -8,9 +8,6 @@ CHAPS:
 
 # クソ通貨クロス？レビュー
 
-# 暗号通貨で○万円溶かした話する？ @erukiti
-  - chap-melt-money-with-coin.re
-  
 # 仮想通貨を支えるコミュニティ @h.nayuta
 
 # ラボ特集
@@ -26,15 +23,13 @@ CHAPS:
 
   - geeklabnagano.re
 
-# この本を書くにあたってポイント・トークンシステムを作った話（これから作る話） @erukiti
-  - labo-token-point.re
-
-# オンラインラボという試み @erukiti
-  - labo-online.re
-
 # 数理最適化サンプルプログラムを軽く解析して今後の応用に備える
 
   - ORProblems.re
+
+# 持続可能な論理国家を建国しよう @erukiti
+
+  - logical-japan.re
 
 APPENDIX:
 
