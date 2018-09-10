@@ -28,7 +28,10 @@
         \end{minipage}
     \hspace{1ex}
 //}
-技術ガン振り型エンジニャー。フロントエンドからバックエンド、Dockerなど一通り好き。JavaScriptで覚える暗号通貨入門第一弾「Bitcoin完全に理解した」 #bitcoin_complete を書いております！(技術書典4に間に合うはず)
+技術ガン振り型エンジニャー。フロントエンドからバックエンド、Dockerなどひととおり好き。
+Pray for V8!!
+V8を崇めよ！JavaScriptとTypeScriptを称えよ！
+技術書典5では、本2冊を発行予定です。
 
 BTC: 1BRCrrHj46RgtszSp83pUdAMF5TpuZgghm
 
