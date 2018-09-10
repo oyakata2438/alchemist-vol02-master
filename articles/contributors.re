@@ -69,16 +69,16 @@ BTC: 1BRCrrHj46RgtszSp83pUdAMF5TpuZgghm
         \includegraphics[width=.75\linewidth]{images/contributors/icon_nayuta.png}
     \end{minipage}
     \begin{minipage}{.89\linewidth}
-        花房なゆた @SoBunch https://twitter.com/SoBunch\\
-        サークル名：神Excel https://god-excel.com/
+        花房なゆた @hanafusa1060 https://twitter.com/hanafusa1060\\
+        サークル名：R-OJISAN https://1060.work/
         \end{minipage}
     \hspace{1ex}
 //}
 お硬い業種と相性の良い、ギークな御用聞き。なんだかんだで常識人。
-先日は社内SE志望のはずが、いつの間にかホストに採用されてしまい、丁重にお断り申し上げている最中。錬金術は持て余した行動力がネタになる貴重な場です。
-自分がガチホor購入予定の通貨は、名刺の裏に記載予定。神Excelのブースで僕と握手！
+アルケミ本を全国にバラまいている張本人でもある。錬金術は持て余した行動力がネタになる貴重な場です。
+Rおじさんデビューしました。技術書典5では、錬金術meetupのブースで僕と握手！
 
-NANJ: 0x6757af5F121469606435354430e16181ED87B6C3
+NANJ: 0xcc7e923da5388035805113a0079416996ea0cafc
 
 　
 
