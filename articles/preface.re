@@ -16,7 +16,7 @@
 
 //footnote[alchemistMeetup][錬金術Meetup @<href>{https://alchemist.connpass.com/}]
 
-//footnote[techfest3after][ @<href>{https://techbook-and-ethanol.connpass.com/event/63853/} 技術書典3日光式アフター　2017年10月22日開催]
+//footnote[techfest3after][ @<href>{https://techbook-and-ethanol.connpass.com/event/63853/} 技術書典3非公式アフター　2017年10月22日開催]
 
 //footnote[MeetupNo1][ @<href>{https://alchemist.connpass.com/event/70306/} 錬金術Meetup　2017年11月1日開催]
 
@@ -26,9 +26,9 @@
 
 == 本書の配布による金の錬成
 
-この本は、2018年4月開催の技術書典4@<fn>{tb4}において発行するべく執筆中である。我々の目的が技術による金の錬成であるから、我々の知見を集めた書籍・同人誌の発行により金を生み出すことも、当然我々の活動理念に沿っている。取り扱うテーマは多岐にわたるが、世の中の技術者、すなわち錬金術師の諸君の琴線に触れる内容であることを願う。この本が売れると、Meetupにおける寿司が特上になる。売れないと、印刷費持ち出しのため、寿司がなくなる。
+この本は、2018年10月開催の技術書典5@<fn>{tb5}において発行するべく執筆中である。我々の目的が技術による金の錬成であるから、我々の知見を集めた書籍・同人誌の発行により金を生み出すことも、当然我々の活動理念に沿っている。取り扱うテーマは多岐にわたるが、世の中の技術者、すなわち錬金術師の諸君の琴線に触れる内容であることを願う。この本が売れると、Meetupにおける寿司が特上になる。売れないと、印刷費持ち出しのため、寿司がなくなる。
 
-//footnote[tb4][ @<href>{https://techbookfest.org/event/tbf04} 技術書典4　秋葉原UDX　2018年4月22日開催]
+//footnote[tb5][ @<href>{https://techbookfest.org/event/tbf05} 技術書典5　池袋サンシャイン　2018年10月08日開催]
 
 == 新たなる錬金術師への訴求
 
@@ -38,7 +38,7 @@
 
 //flushright{
 
-2018年4月
+2018年10月
 
 錬金術Meetup
 

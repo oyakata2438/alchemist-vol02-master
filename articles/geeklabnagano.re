@@ -1,4 +1,4 @@
-= [寄稿」 GEEKLAB.NAGANOについて
+= [寄稿]GEEKLAB.NAGANOについて
 
 == GEEKLAB.NAGANOとは？
 
