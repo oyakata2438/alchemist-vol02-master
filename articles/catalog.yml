@@ -6,13 +6,6 @@ CHAPS:
 
 # 各自書きたい内容とファイル名を追加していく
 
-# h.nayutaの仮想通貨レビュー @h.nayuta
-# クソ通貨クロスレビュー
-
-  - crossReview.re
-
-  - CCbar.re
-
 # ラボ特集
 
 # ラボ概要@親方
@@ -26,6 +19,13 @@ CHAPS:
 
   - geeklabnagano.re
 
+# h.nayutaの仮想通貨レビュー @h.nayuta
+# クソ通貨クロスレビュー
+
+  - crossReview.re
+
+  - CCbar.re
+
 # 数理最適化サンプルプログラムを軽く解析して今後の応用に備える
 
   - ORProblems.re
@@ -33,10 +33,6 @@ CHAPS:
 # 持続可能な論理国家を建国しよう @erukiti
 
   - logical-japan.re
-
-# クソ通貨クロスレビュー
-
-  - crossReview.re
 
 # ルールの形成と商機 @water_boy_tokyo
  
