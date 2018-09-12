@@ -398,14 +398,14 @@ Togetterは、過去のツイートを探して記事化できます。そのた
 
 == 自己紹介
 
-=== シマリス
+==== シマリス
 Twitter:@<href>{https://twitter.com/logsupport_mark, @logsupport_mark}@<fn>{shimarisu}
 
 元高校の国語の先生だが、いろいろあって退職。railsを勉強し、とある会社で正社員目指してバイト中。いろいろと怪しい崖っ淵だが、人生なんとかなるさ。サイコロふろう。
 
 //footnote[shimarisu][https://twitter.com/logsupport_mark]
 
-=== 紫苑
+==== 紫苑
 Twitter:@<href>{https://twitter.com/grwth1009, @grwth1009}@<fn>{shion}
 
 Javaプログラマ…のはず。ドミ沼にハマった(実質)1年目のエンジニアー。時にアニオタ・時にドミオタといろんなところでオタク見習いをしている人。
