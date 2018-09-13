@@ -35,7 +35,7 @@
 
 　
 
-==　著者
+== 著者
 
 //embed{
     \vspace{0mm}
@@ -98,10 +98,10 @@ NANJ: 0xcc7e923da5388035805113a0079416996ea0cafc
 出来が悪いのは大目に見てやってください。
 数年ぶりに自分のTwitterのアカウント（2009年作成）をみて、今とほぼ同じネーミングルールを踏襲しているのに我ながら驚いた次第。
 
-
+　
 
 //embed{
-    \begin{minipage}{.89\linewidth}
+    \begin{minipage}{.1\linewidth}
         water\_boy\_tokyo @water\_boy\_tokyo https://twitter.com/water\_boy\_tokyo\\
         \end{minipage}
     \hspace{1ex}
