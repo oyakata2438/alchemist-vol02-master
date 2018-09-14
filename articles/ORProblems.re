@@ -252,7 +252,8 @@ result = nx.min_cost_flow(g)
 nx.draw_networkx_edges(g, pos, width=3, edgelist
   =[(k1, k2) for k1, d in result.items() for k2, v in d.items() if v])
 nx.draw_networkx_edge_labels(g, pos,
-    edge_labels=dict([ ((k1, k2),v) for k1, d in result.items() /for k2, v in d.items() if v])
+    edge_labels=dict([ ((k1, k2),v) for k1, d in result.items() \
+    for k2, v in d.items() if v])
                             )
 plt.show()
 //}
@@ -335,7 +336,8 @@ from scipy.spatial import distance as dis
 [2] 任意の確率密度分布に従う乱数の生成（von Neumannの棄却法） | Pacocat's Life http://pacocat.com/?p=596
 """
 class TSP:
-    def __init__(self,path=None,alpha = 1.0,beta = 1.0,Q = 1.0,vanish_ratio = 0.95):
+    def __init__(self,path=None,alpha = 1.0,beta = 1.0,Q = 1.0,\
+                                vanish_ratio = 0.95):
         """ 初期化を行う関数 """
         self.alpha = alpha                    # フェロモンの優先度
         self.beta = beta                    # ヒューリスティック情報(距離)の優先度
@@ -349,7 +351,8 @@ class TSP:
         self.loc = locations                            # x,y座標
         self.n_data = len(self.loc)                        # データ数
         self.dist = dis.squareform(dis.pdist(self.loc))    # 距離の表を作成
-        self.weight = np.random.random_sample((self.n_data,self.n_data))  # フェロモンの量
+        self.weight = np.random.random_sample((self.n_data,self.n_data))  
+                                                        # フェロモンの量
         self.result = np.arange(self.n_data)            # もっともよかった順序を保存する
         print("x,y座標")
         print(self.loc)
@@ -362,7 +365,8 @@ class TSP:
     def cost(self,order):
         """ 指定された順序のコスト計算関数 """
         n_order = len(order)
-        return np.sum( [ self.dist[order[i],order[(i+1)%n_order]] for i in np.arange(n_order) ] )
+        return np.sum( [ self.dist[order[i],order[(i+1)%n_order]] \
+                for i in np.arange(n_order) ] )
     
     def plot(self,order=None):
         """ 指定された順序でプロットする関数 """
@@ -386,7 +390,8 @@ class TSP:
             order[0] = now_city
             
             for j in range(1,self.n_data):
-                upper = np.power(self.weight[now_city,city],self.alpha)*np.power(self.dist[now_city,city],-self.beta)
+                upper = np.power(self.weight[now_city,city],self.alpha)\
+                    *np.power(self.dist[now_city,city],-self.beta)
                 
                 evaluation = upper / np.sum(upper)                # 評価関数
                 percentage = evaluation / np.sum(evaluation)    # 移動確率
@@ -500,7 +505,8 @@ print(chinese_postman(g))
 
 重み合計とルート順表示
 //listnum[No9-out][出力:重み合計とルート順表示]{
-(36, [(0, 4), (4, 5), (5, 4), (4, 3), (3, 2), (2, 3), (3, 0), (0, 5), (5, 1), (1, 2), (2, 0), (0, 1), (1, 0)])
+(36, [(0, 4), (4, 5), (5, 4), (4, 3), (3, 2), (2, 3), (3, 0), (0, 5), (5, 1)\
+　, (1, 2), (2, 0), (0, 1), (1, 0)])
 //}
 
 //image[table15][中国人郵便配達問題の問題のノード][scale=0.75]
@@ -1128,9 +1134,11 @@ def QuadAssign(dfqu, dfdi, from_label='from', to_label='to',
     d = [[first(dfdi[(dfdi[from_label]==i)&(dfdi[to_label]==j)]
           [dist_label],np.inf) for j in r] for i in r]
     r,t = quad_assign(q,d)
-    return r, pd.DataFrame([i for i in enumerate(t)], columns=[target_label,pos_label])
+    return r, pd.DataFrame([i for i in enumerate(t)], \
+        columns=[target_label,pos_label])
     
-quad_assign([[0, 2, 0], [0, 0, 1], [0, 0, 0]], [[0, 2, 4], [2, 0, 3], [4, 3, 0]])
+quad_assign([[0, 2, 0], [0, 0, 1], [0, 0, 0]], [[0, 2, 4], [2, 0, 3], \
+    [4, 3, 0]])
 //}
 
 //listnum[No20-2][二次元割り当て問題の解]{
@@ -1223,7 +1231,7 @@ plt.show()
 print(d)
 //}
 
-//image[image][最大マッチング問題の解]
+//image[image19][最大マッチング問題の解]
 
 === 最大重みマッチング問題（＃２３）
 無向グラフに対し、各辺の重みが与えられているときに重みの和が最大となるマッチングを求める問題。
@@ -1276,7 +1284,7 @@ print(d)
 
 //image[image21][最大重みマッチング問題の解][scale=0.5]
 
-//listnum[No20-2][最大重みマッチング問題の解]{
+//listnum[No23-2][最大重みマッチング問題の解]{
 {(1, 5), (3, 4), (0, 2)}
 //}
 
@@ -1300,7 +1308,8 @@ from more_itertools import first, pairwise
 def typical_optimization_impl(sel):
     return HTML("""\
 <table>
-  <td><a href="http://qiita.com/SaitoTsutomu/items/2ec5f7626054f4b4de63" target="_blank">安定マッチング問題</a></td>
+  <td><a href="http://qiita.com/SaitoTsutomu/items/2ec5f7626054f4b4de63" \
+    target="_blank">安定マッチング問題</a></td>
   <td>StableMatching</td>
 </tr>
 </table>
