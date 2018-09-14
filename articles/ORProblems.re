@@ -252,7 +252,7 @@ result = nx.min_cost_flow(g)
 nx.draw_networkx_edges(g, pos, width=3, edgelist
   =[(k1, k2) for k1, d in result.items() for k2, v in d.items() if v])
 nx.draw_networkx_edge_labels(g, pos,
-    edge_labels=dict([ ((k1, k2),v) for k1, d in result.items() for k2, v in d.items() if v])
+    edge_labels=dict([ ((k1, k2),v) for k1, d in result.items() \for k2, v in d.items() if v])
                             )
 plt.show()
 //}
