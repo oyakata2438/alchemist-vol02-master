@@ -133,7 +133,7 @@ print(t)
 データは、最大集合安定問題と同じ。
 
 ==== 最大クリーク問題（TBW）
-説明がない？確認願います。@matchbou
+最大クリーク問題は、グラフ理論において、グラフ中のクリーク（任意の二頂点間に辺があるような頂点集合）の中で最大のものを見つける問題。
 
 === 最大カット問題 （＃３）
 
@@ -271,7 +271,7 @@ Edge:最大流問題と同じ。
 
 == 経路問題
 
-経路の最適化を行うための問題。（少し追記してほしいかなー）
+グラフの点を巡回箇所、辺を点の間を結ぶ通路と捉えて、与えられた目的関数を最大化（最小化）するために使用する通路とその順番を定める問題の総称。
 
 === 運搬経路（配送最適化）問題[Vehcle Routing Problem]（＃７）
 複数のサービス車（Vehicle）がスタート地点から需要のある地点の巡回を行いゴール地点へ行く。全ての需要を満たし、総経路コストを最小化することを考える問題
@@ -610,7 +610,119 @@ a,b,c,dの要素をid2,3でカバーするとコストは先の被覆問題よ�
 
 === 組み合わせオークション問題（＃１２）
 
-割愛します。
+複数の財を組合せて取得することで個々の財の価値の総和よりも価値が増加したり (補完性)、減少したり (代替性) するような場合に於いては、財を１つずつ別個にオークションに掛ける事が出品者にとって最適な結果をもたらすとは限らない。そのような場合に以下のような手続きで実行される「組合せオークション」に於いて入札額の総和が最大になるように財の割り当てを決める問題である。
+
+(1) 参加者は財の部分集合すべてに対する入札額を申告する
+
+(2) 申告をもとに、主催者は各参加者の入札額の総和が最大になるように財の割当を定める
+
+(3) 参加者は割り当てられた財に対する自分の申告した入札額を主催者に支払う
+
+==== 組み合わせオークション問題のサンプルプログラムとデータ
+
+//listnum[No12][組み合わせオークション問題のサンプルコード]{
+from ortoolpy import combinatorial_auction
+cand = [
+    ( 15, (0,2), 0),
+    ( 10, (0,), 1),
+    (  8, (1,), 1),
+    ( 14, (1,2), 2),
+]
+#実行
+combinatorial_auction(3, cand)
+//}
+
+データはプログラムの中で定義されている配列candである。1行目を例にとると
+(15,(0,2),0) ⇒ 15は入札価格、(0,2)は入札するゼロ始まりのアイテム番号で、最後の0は購入者ID
+である。
+combinatorial_auctionの引数は、左より要素数、入札状況データ（上述）、省略されている第3引数が購入者毎の候補数上限である。
+
+//listnum[No12-2][組み合わせオークション問題のサンプル2]{
+import numpy as np
+
+def CombinatorialAuction(df, id_label='id', price_label='price',
+        element_label='element', buyer_label='buyer', limit=-1, **kwargs):
+    """
+    組合せオークション問題
+        要素を重複売却せず、購入者ごとの候補数上限を超えないように売却金額を最大化
+    入力
+        df: 候補のDataFrameもしくはCSVファイル名
+        id_label: 候補番号の属性文字
+        price_label: 金額の属性文字
+        element_label: 要素の属性文字
+        buyer_label: 購入者番号の属性文字
+        limit: 購入者ごとの候補数上限。-1なら無制限。購入者IDをキーにした辞書可
+    出力
+        選択された候補リストの番号リスト
+        (priceは、同一id内で1つ以外NaNと変える)
+    """
+    df = graph_from_table(df, None, no_graph=True, **kwargs)[1]
+    df = df.sort_values(id_label)
+    g = df.groupby(id_label)
+    r = combinatorial_auction(len(df[element_label].unique()),
+        [(v[price_label].iloc[0], v[element_label].tolist(),
+          v.iloc[0].get(buyer_label, 0)) for _,v in g], limit=limit)
+    df = df[df[id_label].isin(r)].copy()
+    df.loc[df[id_label]==df[id_label].shift(1), price_label] = np.nan
+    return df
+
+def graph_from_table(dfnd, dfed, directed=False, node_label='id',
+        from_label='node1', to_label='node2', from_to=None,
+        no_graph=False, **kwargs):
+    """表からグラフを作成"""
+    import re, pandas as pd, networkx as nx
+    class mydict(dict):
+        __getattr__ = dict.__getitem__
+        __deepcopy__ = lambda i, j: mydict(i)
+    if isinstance(dfnd, str):
+        m = re.match(r'\[([^]]+)](\w+)', dfnd)
+        if m:
+            dfnd = pd.read_excel(m.group(1), m.group(2), **kwargs)
+        else:
+            dfnd = pd.read_csv(dfnd, **kwargs)
+    if isinstance(dfed, str):
+        m = re.match(r'\[([^]]+)](\w+)', dfed)
+        if m:
+            dfed = pd.read_excel(m.group(1), m.group(2), **kwargs)
+        else:
+            dfed = pd.read_csv(dfed, **kwargs)
+    g = None
+    if not no_graph:
+        g = nx.DiGraph() if directed else nx.Graph()
+        if dfnd is not None:
+            for _,r in dfnd.iterrows():
+                g.add_node(r[node_label], mydict(r.to_dict()))
+        if from_to:
+            dfft = dfed[[from_label,to_label]]
+            dfed[from_to] = dfft.min(1).astype(str)+'-'+dfft.max(1).astype(str)
+        for _,r in dfed.iterrows():
+            n1,n2 = r[from_label],r[to_label]
+            g.add_edge(n1, n2, None)
+            g.adj[n1][n2] = mydict(r.to_dict())
+            (g.pred if directed else g.adj)[n2][n1] = g.adj[n1][n2]
+    return g, dfnd, dfed
+#サンプル 2-設定1 – limit引数無の設定で実行
+CombinatorialAuction('auction5.csv')
+//}
+
+//image[tableauction][組み合わせオークション問題のデータ　auction5.csv][scale=1.0]
+
+Idは単なる識別子で値により動作は不変。priceは入札価格、elementは入札対象アイテム名、buyerは入札者識別子。
+
+結果
+//image[image12-2][組み合わせオークション問題の結果]
+
+同一buyerに複数（本例は上限なし）アイテムの入札を許し、各elementに最高額を付けた入札が採用される。
+
+//listnum[No12-3][組み合わせオークション問題のサンプルコード:設定2]{
+#サンプル 2-設定2 – limit引数1の設定で実行—入札上限は1アイテム
+CombinatorialAuction('auction5.csv',limit=1)
+//}
+
+結果
+//image[image12-3][組み合わせオークション問題　設定2の結果]
+
+各buyerの落札アイテム数が1という制約が課される。
 
 == スケジューリング問題
 スケジュールを立てる問題。
