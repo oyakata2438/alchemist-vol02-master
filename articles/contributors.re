@@ -89,8 +89,8 @@ NANJ: 0xcc7e923da5388035805113a0079416996ea0cafc
         \includegraphics[width=.75\linewidth]{images/contributors/icon_matchbou.jpg}
     \end{minipage}
     \begin{minipage}{.89\linewidth}
-        matchbou  @Match\_Bou  
-        https://twitter.com/Match\_Bou \\
+        matchbou  @Match\_Bou\\  
+        https://twitter.com/Match\_Bou
         \end{minipage}
     \hspace{1ex}
 //}
@@ -107,8 +107,8 @@ NANJ: 0xcc7e923da5388035805113a0079416996ea0cafc
         \includegraphics[width=.75\linewidth]{images/contributors/icon_water.jpg}
     \end{minipage}
     \begin{minipage}{.89\linewidth}
-        water\_boy\_tokyo @water\_boy\_tokyo 
-        https://twitter.com/water\_boy\_tokyo\\
+        water\_boy\_tokyo @water\_boy\_tokyo\\ 
+        https://twitter.com/water\_boy\_tokyo
         \end{minipage}
     \hspace{1ex}
 //}
