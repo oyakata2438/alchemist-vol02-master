@@ -30,7 +30,9 @@
 
 //flushright{
 
-2018年9月
+2018年10月
+
+錬金術Meetup
 
 親方@oyakata2438
 
