@@ -102,10 +102,14 @@ NANJ: 0xcc7e923da5388035805113a0079416996ea0cafc
 
 //embed{
     \begin{minipage}{.1\linewidth}
+        \centering
+        \includegraphics[width=.75\linewidth]{images/contributors/icon_water.jpg}
+    \end{minipage}
+    \begin{minipage}{.89\linewidth}
         water\_boy\_tokyo @water\_boy\_tokyo https://twitter.com/water\_boy\_tokyo\\
         \end{minipage}
     \hspace{1ex}
 //}
 本職はリーガルテック系エンジニア。ルールとテクノロジーを組み合わせることに果てしない可能性を感じている。
 世界の議会や裁判所で良く見かける人になりたい。ちなみに、今まで3ヶ国の議会と7ヶ国の裁判所を傍聴している。
-ただ、何だかんだで、日本の中央官庁の議論を傍聴するのが一番好きかもしれない。
+ただ、なんだかんだで、日本の中央官庁の議論を傍聴するのが一番好きかもしれない。
